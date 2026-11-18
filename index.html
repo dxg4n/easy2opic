@@ -1,0 +1,1886 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPIc Focus - 나만의 오픽 마스터 스튜디오</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        /* 4가지 파스텔톤 디자인 테마 변수 */
+        :root, [data-theme="sage"] {
+            --bg-main: #F5F7F5;
+            --bg-card: #FFFFFF;
+            --bg-soft: #EBF1EC;
+            --primary: #5D826B;
+            --primary-hover: #4B6B57;
+            --primary-text: #FFFFFF;
+            --accent-bg: #DFECE3;
+            --accent-text: #3A5A46;
+            --text-main: #1F2923;
+            --text-muted: #64746B;
+            --border-color: #DCE5DE;
+        }
+
+        [data-theme="lavender"] {
+            --bg-main: #F6F5FA;
+            --bg-card: #FFFFFF;
+            --bg-soft: #EFEBF8;
+            --primary: #7B6BA8;
+            --primary-hover: #655691;
+            --primary-text: #FFFFFF;
+            --accent-bg: #E5DFF5;
+            --accent-text: #4F4178;
+            --text-main: #221E2E;
+            --text-muted: #6E6880;
+            --border-color: #E2DDF0;
+        }
+
+        [data-theme="peach"] {
+            --bg-main: #FAF6F4;
+            --bg-card: #FFFFFF;
+            --bg-soft: #F7ECE6;
+            --primary: #C97A57;
+            --primary-hover: #B06443;
+            --primary-text: #FFFFFF;
+            --accent-bg: #F3E0D6;
+            --accent-text: #8A4A2E;
+            --text-main: #2B211D;
+            --text-muted: #7D6B63;
+            --border-color: #EDE0D8;
+        }
+
+        [data-theme="sky"] {
+            --bg-main: #F4F7FA;
+            --bg-card: #FFFFFF;
+            --bg-soft: #E8F0F8;
+            --primary: #5482A9;
+            --primary-hover: #416B8F;
+            --primary-text: #FFFFFF;
+            --accent-bg: #DAE7F5;
+            --accent-text: #325573;
+            --text-main: #1C2630;
+            --text-muted: #637382;
+            --border-color: #DAE3EC;
+        }
+
+        .theme-bg-main { background-color: var(--bg-main); }
+        .theme-bg-card { background-color: var(--bg-card); }
+        .theme-bg-soft { background-color: var(--bg-soft); }
+        .theme-primary { background-color: var(--primary); color: var(--primary-text); }
+        .theme-primary:hover { background-color: var(--primary-hover); }
+        .theme-accent { background-color: var(--accent-bg); color: var(--accent-text); }
+        .theme-text-main { color: var(--text-main); }
+        .theme-text-muted { color: var(--text-muted); }
+        .theme-text-primary { color: var(--primary); }
+        .theme-border { border-color: var(--border-color); }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            70% { transform: scale(1.25); opacity: 0; }
+            100% { transform: scale(1.25); opacity: 0; }
+        }
+        .recording-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            background-color: #EF4444;
+            animation: pulse-ring 1.5s infinite;
+            z-index: -1;
+        }
+
+        .card-enter {
+            animation: fadeSlide 0.28s ease-out forwards;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 가로 스크롤바 숨김 처리 (깔끔한 칩 필터용) */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="theme-bg-main theme-text-main min-h-screen flex flex-col pb-24 md:pb-10">
+
+    <!-- 심플 & 모던 메인 헤더 -->
+    <header class="theme-bg-card border-b theme-border sticky top-0 z-40 shadow-2xs">
+        <div class="max-w-4xl mx-auto px-4 py-3.5">
+            <div class="flex items-center justify-between gap-3">
+                <!-- 좌측: 타이틀 + 목표 등급 + 현재 Stage 뱃지 -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">OPIc Focus</h1>
+                    
+                    <button onclick="openGoalModal()" class="theme-accent px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 hover:opacity-90 transition cursor-pointer" title="목표 등급 변경">
+                        <span>목표: <strong id="header-goal-badge">IM3</strong></span>
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    </button>
+
+                    <button onclick="switchTab('test')" class="theme-bg-soft theme-text-primary px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 hover:opacity-90 transition cursor-pointer" title="미니 테스트로 다음 Stage 해금">
+                        <span>🔓 Stage <span id="header-stage-badge">1</span>/<span id="header-max-stage">10</span></span>
+                    </button>
+                </div>
+
+                <!-- 우측: 4종 파스텔 원형 색상 아이콘 + 데이터 추가/관리 버튼 -->
+                <div class="flex items-center gap-2.5 shrink-0">
+                    <!-- 4개 작은 색상 아이콘 -->
+                    <div class="flex items-center gap-1.5 bg-gray-100/80 px-2 py-1.5 rounded-full border theme-border" title="테마 색상 변경">
+                        <button onclick="setTheme('sage')" data-theme-btn="sage" aria-label="세이지 민트" class="theme-dot w-4 h-4 rounded-full bg-[#5D826B] transition-transform hover:scale-110 ring-2 ring-offset-1 ring-[#5D826B]"></button>
+                        <button onclick="setTheme('lavender')" data-theme-btn="lavender" aria-label="라벤더" class="theme-dot w-4 h-4 rounded-full bg-[#7B6BA8] transition-transform hover:scale-110 opacity-70"></button>
+                        <button onclick="setTheme('peach')" data-theme-btn="peach" aria-label="피치 크림" class="theme-dot w-4 h-4 rounded-full bg-[#C97A57] transition-transform hover:scale-110 opacity-70"></button>
+                        <button onclick="setTheme('sky')" data-theme-btn="sky" aria-label="스카이" class="theme-dot w-4 h-4 rounded-full bg-[#5482A9] transition-transform hover:scale-110 opacity-70"></button>
+                    </div>
+
+                    <!-- 내 데이터 추가 / 데이터 팩 관리 버튼 -->
+                    <button onclick="openDataModal()" class="p-2 rounded-full theme-bg-soft theme-text-primary hover:opacity-85 transition" title="나만의 단어·문장 추가 및 데이터 팩 관리">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 목표 전략 가이드 한 줄 배너 & PC 탭 메뉴 -->
+            <div class="mt-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+                <p id="goal-strategy-text" class="text-xs theme-text-muted truncate">
+                    💡 IM3 공략: 단답형을 피하고 연결어와 과거 시제를 활용해 3~4문장으로 자연스럽게 이어 말하세요.
+                </p>
+
+                <!-- PC용 상단 탭 네비게이션 -->
+                <nav class="hidden md:flex items-center p-1 rounded-2xl theme-bg-soft border theme-border shrink-0">
+                    <button onclick="switchTab('survey')" data-tab="survey" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all">
+                        1. 서베이
+                    </button>
+                    <button onclick="switchTab('vocab')" data-tab="vocab" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all">
+                        2. 단어·숙어
+                    </button>
+                    <button onclick="switchTab('speaking')" data-tab="speaking" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all">
+                        3. 문장·회화
+                    </button>
+                    <button onclick="switchTab('test')" data-tab="test" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all">
+                        4. 실전 테스트
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="max-w-4xl w-full mx-auto px-4 pt-5 flex-1">
+
+        <!-- ==================== TAB 1: 실전 배경 설문 (Survey) ==================== -->
+        <section id="tab-survey" class="tab-content card-enter space-y-5">
+            <div class="theme-bg-card rounded-3xl p-5 sm:p-7 border theme-border shadow-xs">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b theme-border">
+                    <div>
+                        <span class="text-xs font-semibold theme-text-primary uppercase tracking-wider">Background Survey</span>
+                        <h2 class="text-lg sm:text-xl font-bold mt-0.5">실전 배경 설문 선택</h2>
+                        <p class="text-xs sm:text-sm theme-text-muted mt-1">실제 시험처럼 주제를 고르면 <strong>단어장</strong>과 <strong>회화 스튜디오</strong>가 내 맞춤형으로 구성됩니다.</p>
+                    </div>
+                    <div class="flex items-center gap-2 self-start sm:self-center">
+                        <span class="text-xs font-medium px-3 py-1.5 rounded-full theme-bg-soft theme-text-main">
+                            선택 주제: <strong id="selected-count" class="theme-text-primary">5</strong>개
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 설문 파트 1: 기본 필수 포함 -->
+                <div class="mt-5 space-y-4">
+                    <div>
+                        <h3 class="text-sm font-semibold mb-2.5 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full theme-accent text-xs flex items-center justify-center font-bold">1</span>
+                            공통 필수 출제 영역 (자동 포함)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="p-3.5 rounded-2xl theme-bg-soft border theme-border flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-semibold">거주지 (집/아파트) & 만능 필러</p>
+                                    <p class="text-xs theme-text-muted">자기소개 후 첫 번째 공통 질문 및 연결어</p>
+                                </div>
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full theme-primary">필수</span>
+                            </div>
+                            <div class="p-3.5 rounded-2xl theme-bg-soft border theme-border flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-semibold">돌발 주제 & 롤플레이 (11~13번)</p>
+                                    <p class="text-xs theme-text-muted">스마트폰, 날씨, 교통, 질문하기/대안제시</p>
+                                </div>
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full theme-primary">필수</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 설문 파트 2: 여가 / 취미 / 운동 / 휴가 선택 -->
+                    <div class="pt-2">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <h3 class="text-sm font-semibold flex items-center gap-2">
+                                <span class="w-5 h-5 rounded-full theme-accent text-xs flex items-center justify-center font-bold">2</span>
+                                여가 · 취미 · 운동 · 휴가 선택
+                            </h3>
+                            <button onclick="selectRecommendedSurvey()" class="text-xs font-semibold theme-text-primary hover:underline">
+                                ✨ IM3 전략 추천 조합 선택
+                            </button>
+                        </div>
+                        
+                        <div id="survey-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                            <!-- JS 렌더링 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 하단 이동 버튼 -->
+                <div class="mt-7 pt-4 border-t theme-border flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <button onclick="openDataModal()" class="text-xs font-medium theme-text-primary hover:underline flex items-center gap-1">
+                        <span>+ 내가 직접 추가한 단어/문장 관리하기</span>
+                    </button>
+                    <div class="flex w-full sm:w-auto gap-2">
+                        <button onclick="switchTab('vocab')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-sm font-semibold theme-accent hover:opacity-90 transition text-center">
+                            단어·숙어 암기 →
+                        </button>
+                        <button onclick="switchTab('speaking')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-sm font-semibold theme-primary transition text-center shadow-xs">
+                            문장·회화 훈련 →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: 단어 & 숙어 암기장 ==================== -->
+        <section id="tab-vocab" class="tab-content hidden card-enter space-y-4">
+            <!-- Stage 선택 및 주제 필터 -->
+            <div class="theme-bg-card rounded-3xl p-4 sm:p-5 border theme-border shadow-xs space-y-3">
+                <!-- Stage 선택 바 -->
+                <div class="flex items-center justify-between gap-2 pb-2.5 border-b theme-border">
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar" id="vocab-stage-filters">
+                        <!-- Stage 칩 JS 렌더링 -->
+                    </div>
+                    <button onclick="toggleBookmarkFilter()" id="bookmark-filter-btn" class="px-3 py-1.5 rounded-full text-xs font-medium border theme-border theme-bg-soft hover:opacity-80 transition flex items-center gap-1 shrink-0">
+                        <span>⭐ 북마크</span>
+                    </button>
+                </div>
+
+                <!-- 주제 필터 칩 -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar" id="vocab-topic-filters">
+                    <!-- 주제 칩 JS 렌더링 -->
+                </div>
+            </div>
+
+            <!-- 플래시카드 메인 -->
+            <div class="theme-bg-card rounded-3xl p-6 sm:p-10 border theme-border shadow-xs flex flex-col items-center justify-between min-h-[340px] relative">
+                <div class="w-full flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5">
+                        <span id="vocab-card-stage" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full theme-primary">Stage 1</span>
+                        <span id="vocab-card-topic" class="text-xs font-semibold px-2.5 py-0.5 rounded-full theme-accent">주제명</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="vocab-counter" class="text-xs font-medium theme-text-muted">1 / 10</span>
+                        <button onclick="toggleCurrentBookmark()" class="p-2 rounded-full theme-bg-soft hover:opacity-80 transition" title="북마크 저장">
+                            <svg id="bookmark-icon" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 단어 / 숙어 / 예문 플립 영역 -->
+                <div onclick="flipVocabCard()" class="my-6 text-center cursor-pointer w-full py-4 select-none group">
+                    <p class="text-[11px] theme-text-muted mb-2 opacity-75 group-hover:opacity-100 transition">카드를 터치하면 뜻과 실전 예문을 가리거나 볼 수 있습니다</p>
+                    <h3 id="vocab-word" class="text-2xl sm:text-4xl font-bold tracking-tight theme-text-main">
+                        hang out
+                    </h3>
+                    <div id="vocab-back-content" class="mt-4 space-y-2.5 transition-all">
+                        <p id="vocab-meaning" class="text-lg sm:text-xl font-semibold theme-text-primary">
+                            시간을 보내다, 어울리다
+                        </p>
+                        <div class="max-w-lg mx-auto p-3.5 rounded-2xl theme-bg-soft text-sm">
+                            <p id="vocab-example-en" class="font-medium theme-text-main">"I usually hang out in my room after work."</p>
+                            <p id="vocab-example-ko" class="text-xs theme-text-muted mt-1">나는 보통 퇴근 후에 내 방에서 시간을 보낸다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 하단 컨트롤 -->
+                <div class="w-full flex flex-wrap items-center justify-between gap-3 pt-4 border-t theme-border">
+                    <div class="flex items-center gap-2">
+                        <button onclick="speakCurrentVocab(1.0)" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold theme-accent hover:opacity-90 transition flex items-center gap-1.5">
+                            <span>🔊 발음 듣기</span>
+                        </button>
+                        <button onclick="speakCurrentVocab(0.75)" class="px-3 py-2 rounded-xl text-xs font-medium theme-bg-soft theme-text-muted hover:theme-text-main transition">
+                            0.75x
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-2 ml-auto">
+                        <button onclick="prevVocab()" class="px-4 py-2 rounded-xl text-sm font-medium border theme-border hover:theme-bg-soft transition">
+                            ← 이전
+                        </button>
+                        <button onclick="nextVocab()" class="px-5 py-2 rounded-xl text-sm font-semibold theme-primary transition shadow-2xs">
+                            다음 →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: 문장 학습 & 회화 스튜디오 ==================== -->
+        <section id="tab-speaking" class="tab-content hidden card-enter space-y-4">
+            <!-- Stage 및 주제 필터 -->
+            <div class="theme-bg-card rounded-3xl p-4 sm:p-5 border theme-border shadow-xs space-y-3">
+                <div class="flex items-center justify-between gap-2 pb-2.5 border-b theme-border">
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar" id="speaking-stage-filters">
+                        <!-- Stage 칩 JS 렌더링 -->
+                    </div>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-medium shrink-0">
+                        <input type="checkbox" id="cloze-mode-toggle" onchange="renderSpeakingCard()" class="rounded accent-current">
+                        <span>빈칸 훈련</span>
+                    </label>
+                </div>
+
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar" id="speaking-topic-filters">
+                    <!-- 주제 칩 JS 렌더링 -->
+                </div>
+            </div>
+
+            <!-- 실전 질문 & 모범 스크립트 카드 -->
+            <div class="theme-bg-card rounded-3xl p-5 sm:p-7 border theme-border shadow-xs space-y-5">
+                <div class="flex items-start justify-between gap-3 pb-4 border-b theme-border">
+                    <div>
+                        <div class="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                            <span id="speaking-stage-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full theme-primary">Stage 1</span>
+                            <span id="speaking-topic-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full theme-accent">주제</span>
+                            <span id="speaking-type-badge" class="text-xs font-medium px-2.5 py-0.5 rounded-full theme-bg-soft theme-text-muted">유형</span>
+                        </div>
+                        <h3 id="speaking-question" class="text-base sm:text-lg font-bold theme-text-main leading-snug">
+                            Q. Tell me about your home.
+                        </h3>
+                    </div>
+                    <button onclick="speakQuestion()" class="p-2.5 rounded-xl theme-bg-soft theme-text-primary hover:opacity-80 transition shrink-0" title="질문 원어민 듣기">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                    </button>
+                </div>
+
+                <!-- 모범 답변 문장 리스트 -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold theme-text-primary">실전 답변 스크립트 (문장을 누르면 개별 듣기)</span>
+                        <button onclick="toggleKoreanTranslation()" id="toggle-ko-btn" class="text-xs font-medium theme-text-muted hover:theme-text-main underline">
+                            한글 해석 숨기기
+                        </button>
+                    </div>
+                    
+                    <div id="speaking-sentences-list" class="space-y-2.5">
+                        <!-- 문장 리스트 JS 렌더링 -->
+                    </div>
+                </div>
+
+                <!-- 원어민 전체 듣기 & 이전/다음 문제 -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+                    <div class="flex items-center gap-2">
+                        <button onclick="speakFullAnswer(1.0)" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold theme-accent hover:opacity-90 transition flex items-center gap-1.5">
+                            <span>🔊 전체 답변 듣기</span>
+                        </button>
+                        <button onclick="stopSpeech()" class="px-3 py-2.5 rounded-xl text-xs font-medium theme-bg-soft theme-text-muted hover:theme-text-main transition">
+                            정지
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2 ml-auto">
+                        <span id="speaking-counter" class="text-xs theme-text-muted mr-1">1 / 6</span>
+                        <button onclick="prevSpeaking()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border theme-border hover:theme-bg-soft transition">
+                            ← 이전
+                        </button>
+                        <button onclick="nextSpeaking()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold theme-primary transition">
+                            다음 →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🎙️ 셀프 녹음 & 회화 피드백 스튜디오 -->
+            <div class="theme-bg-card rounded-3xl p-5 sm:p-6 border theme-border shadow-xs">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h4 class="text-sm sm:text-base font-bold flex items-center gap-2">
+                            <span>🎙️ 내 목소리 녹음 & 비교 듣기</span>
+                            <span id="recording-status-badge" class="text-xs font-medium px-2.5 py-0.5 rounded-full theme-bg-soft theme-text-muted">대기 중</span>
+                        </h4>
+                        <p class="text-xs theme-text-muted mt-1">영어로 직접 말하며 녹음한 뒤, 원어민 발음과 내 녹음 파일을 번갈아 들어보세요.</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 self-start sm:self-center">
+                        <button id="record-btn" onclick="toggleRecording('studio')" class="relative px-5 py-3 rounded-2xl text-sm font-semibold theme-primary transition flex items-center gap-2 shadow-2xs">
+                            <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                            <span id="record-btn-text">녹음 시작</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 녹음된 오디오 재생기 영역 -->
+                <div id="audio-playback-box" class="hidden mt-4 pt-4 border-t theme-border flex flex-col sm:flex-row items-center justify-between gap-3 theme-bg-soft p-3.5 rounded-2xl">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold theme-text-primary">🎧 내 녹음 파일:</span>
+                        <span class="text-xs theme-text-muted">재생 버튼을 눌러 확인하세요</span>
+                    </div>
+                    <audio id="recorded-audio" controls class="w-full sm:w-72 h-9 rounded-lg"></audio>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: 실전 미니 테스트 & Stage 해금 ==================== -->
+        <section id="tab-test" class="tab-content hidden card-enter space-y-5">
+            <!-- Stage 로드맵 현황판 -->
+            <div class="theme-bg-card rounded-3xl p-5 sm:p-7 border theme-border shadow-xs space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b theme-border">
+                    <div>
+                        <span class="text-xs font-semibold theme-text-primary uppercase tracking-wider">Stage Progression</span>
+                        <h2 class="text-lg sm:text-xl font-bold mt-0.5">단계별 학습 로드맵 & 승급 테스트</h2>
+                        <p class="text-xs sm:text-sm theme-text-muted mt-1">미니 테스트에서 <strong>80점(4/5문제) 이상</strong> 통과하면 다음 Stage의 새로운 단어와 실전 문장이 해금됩니다!</p>
+                    </div>
+                    <div class="self-start sm:self-center">
+                        <span class="text-xs font-bold px-3.5 py-1.5 rounded-full theme-accent">
+                            현재 해금: Stage 1 ~ <span id="test-unlocked-level">1</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Stage 1 ~ 10+ 뱃지 그리드 -->
+                <div id="stage-roadmap-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                    <!-- JS 렌더링 -->
+                </div>
+
+                <!-- 테스트 시작 배너 -->
+                <div id="test-intro-box" class="mt-4 p-5 rounded-2xl theme-bg-soft border theme-border flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h3 id="test-target-title" class="text-base font-bold theme-text-main">🎯 Stage 1 승급 미니 테스트</h3>
+                        <p class="text-xs theme-text-muted mt-1">단어·숙어 객관식 3문제 + 실전 스피킹 발화 평가 2문제 (총 5문제)</p>
+                    </div>
+                    <button onclick="startMiniTest()" class="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold theme-primary transition shadow-xs shrink-0">
+                        테스트 시작하기 →
+                    </button>
+                </div>
+            </div>
+
+            <!-- 실제 퀴즈 진행 컨테이너 -->
+            <div id="test-active-box" class="hidden theme-bg-card rounded-3xl p-5 sm:p-7 border theme-border shadow-xs space-y-5">
+                <div class="flex items-center justify-between pb-3 border-b theme-border">
+                    <span id="quiz-progress-badge" class="text-xs font-bold px-3 py-1 rounded-full theme-accent">문제 1 / 5</span>
+                    <span id="quiz-type-label" class="text-xs font-medium theme-text-muted">단어·구동사 퀴즈</span>
+                </div>
+
+                <!-- 객관식 퀴즈 UI (1~3번) -->
+                <div id="quiz-mcq-area" class="space-y-4">
+                    <div class="p-4 rounded-2xl theme-bg-soft">
+                        <p class="text-xs theme-text-muted mb-1">다음 뜻에 해당하는 가장 자연스러운 영어 표현은?</p>
+                        <h4 id="quiz-mcq-prompt" class="text-lg sm:text-xl font-bold theme-text-main">긴장을 풀다, 휴식을 취하다</h4>
+                        <p id="quiz-mcq-hint" class="text-xs theme-text-primary mt-2 italic">"I go to a cafe to ______ after work."</p>
+                    </div>
+                    <div id="quiz-mcq-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <!-- 선택지 버튼 JS 렌더링 -->
+                    </div>
+                </div>
+
+                <!-- 실전 스피킹 퀴즈 UI (4~5번) -->
+                <div id="quiz-speaking-area" class="hidden space-y-4">
+                    <div class="p-4 rounded-2xl theme-bg-soft space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold theme-text-primary">🎤 실전 스피킹 테스트</span>
+                            <button onclick="speakQuizQuestion()" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-white theme-text-primary shadow-2xs">🔊 질문 다시 듣기</button>
+                        </div>
+                        <h4 id="quiz-spk-question" class="text-base sm:text-lg font-bold theme-text-main">Tell me about your home.</h4>
+                        <p id="quiz-spk-keywords" class="text-xs theme-text-muted">💡 포함할 핵심 키워드: <strong class="theme-text-primary">cozy, rearrange, hang out</strong></p>
+                    </div>
+
+                    <!-- 테스트용 녹음 컨트롤 -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl border theme-border">
+                        <button id="test-record-btn" onclick="toggleRecording('test')" class="relative w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold theme-primary transition flex items-center justify-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                            <span id="test-record-btn-text">답변 녹음하기</span>
+                        </button>
+                        <audio id="test-recorded-audio" controls class="hidden w-full sm:w-64 h-9"></audio>
+                    </div>
+
+                    <!-- 모범 답안 비교 및 자가 채점 -->
+                    <div class="p-4 rounded-2xl theme-bg-soft space-y-2">
+                        <button onclick="document.getElementById('quiz-sample-answer').classList.toggle('hidden')" class="text-xs font-semibold theme-text-primary underline">
+                            모범 답안 예시 확인하기 (클릭)
+                        </button>
+                        <p id="quiz-sample-answer" class="hidden text-xs sm:text-sm theme-text-main leading-relaxed pt-1">
+                            "I live in an apartment. My favorite place is my bedroom because it is very cozy..."
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button onclick="submitSpeakingQuiz(false)" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium border theme-border hover:bg-gray-100 transition">
+                            아쉬워요 (재도전 필요)
+                        </button>
+                        <button onclick="submitSpeakingQuiz(true)" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold theme-primary transition">
+                            유창하게 답변 완료! (Pass) →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 테스트 결과 화면 -->
+            <div id="test-result-box" class="hidden theme-bg-card rounded-3xl p-6 sm:p-8 border theme-border shadow-xs text-center space-y-4">
+                <div id="test-result-emoji" class="text-4xl">🎉</div>
+                <h3 id="test-result-title" class="text-xl sm:text-2xl font-bold">축하합니다! Stage 1 통과!</h3>
+                <p id="test-result-desc" class="text-sm theme-text-muted max-w-md mx-auto">
+                    총 5문제 중 5문제를 통과하여 <strong>Stage 2</strong>의 새로운 단어와 실전 스크립트가 해금되었습니다!
+                </p>
+                <div class="flex flex-wrap justify-center gap-2.5 pt-2">
+                    <button onclick="switchTab('vocab')" class="px-5 py-2.5 rounded-xl text-sm font-semibold theme-accent transition">
+                        새 단어 보러 가기
+                    </button>
+                    <button onclick="switchTab('speaking')" class="px-5 py-2.5 rounded-xl text-sm font-semibold theme-primary transition">
+                        새 문장 공부하기
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 모바일 전용 하단 탭 네비게이션 (4개 탭) -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 theme-bg-card border-t theme-border z-40 px-1.5 py-1.5 flex justify-around items-center shadow-lg">
+        <button onclick="switchTab('survey')" data-tab="survey" class="mobile-nav-tab flex flex-col items-center py-1 px-2.5 rounded-xl text-[11px] font-medium transition">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            <span>서베이</span>
+        </button>
+        <button onclick="switchTab('vocab')" data-tab="vocab" class="mobile-nav-tab flex flex-col items-center py-1 px-2.5 rounded-xl text-[11px] font-medium transition">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <span>단어·숙어</span>
+        </button>
+        <button onclick="switchTab('speaking')" data-tab="speaking" class="mobile-nav-tab flex flex-col items-center py-1 px-2.5 rounded-xl text-[11px] font-medium transition">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+            <span>문장·회화</span>
+        </button>
+        <button onclick="switchTab('test')" data-tab="test" class="mobile-nav-tab flex flex-col items-center py-1 px-2.5 rounded-xl text-[11px] font-medium transition">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+            <span>테스트</span>
+        </button>
+    </nav>
+
+    <!-- 목표 등급 설정 모달 -->
+    <div id="goal-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="theme-bg-card rounded-3xl max-w-md w-full p-6 border theme-border shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold">목표 오픽(OPIc) 등급 설정</h3>
+                <button onclick="closeGoalModal()" class="p-1.5 rounded-full hover:bg-gray-100 text-gray-500">✕</button>
+            </div>
+            <div class="space-y-2.5">
+                <button onclick="selectGoal('IM1~2')" class="w-full text-left p-3.5 rounded-2xl border theme-border hover:theme-bg-soft transition">
+                    <div class="font-bold text-sm">IM1 ~ IM2 (기초 의사소통)</div>
+                    <div class="text-xs theme-text-muted mt-0.5">익숙한 주제에 대해 기본 문장 구조로 자신의 생각을 전달하는 단계</div>
+                </button>
+                <button onclick="selectGoal('IM3')" class="w-full text-left p-3.5 rounded-2xl border-2 border-current theme-bg-soft theme-text-primary transition">
+                    <div class="font-bold text-sm flex items-center justify-between">
+                        <span>IM3 (중급 완성 - 추천 목표)</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full theme-primary">추천</span>
+                    </div>
+                    <div class="text-xs theme-text-muted mt-0.5">연결어와 시제를 활용해 문단을 구성하고 경험을 자연스럽게 설명하는 단계</div>
+                </button>
+                <button onclick="selectGoal('IH~AL')" class="w-full text-left p-3.5 rounded-2xl border theme-border hover:theme-bg-soft transition">
+                    <div class="font-bold text-sm">IH ~ AL (중상급 유창성)</div>
+                    <div class="text-xs theme-text-muted mt-0.5">풍부한 어휘와 관용구, 돌발 상황에 대한 유연한 대처 능력을 보여주는 단계</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 나만의 단어/문장 추가 & 데이터 팩 가져오기/내보내기 모달 -->
+    <div id="data-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+        <div class="theme-bg-card rounded-3xl max-w-lg w-full p-6 border theme-border shadow-xl space-y-4 my-8">
+            <div class="flex items-center justify-between pb-2 border-b theme-border">
+                <h3 class="text-lg font-bold">나만의 학습 데이터 추가 & 확장</h3>
+                <button onclick="closeDataModal()" class="p-1.5 rounded-full hover:bg-gray-100 text-gray-500">✕</button>
+            </div>
+
+            <!-- 모달 내 탭 전환 -->
+            <div class="flex gap-1.5 p-1 rounded-xl theme-bg-soft">
+                <button onclick="switchDataModalTab('add-vocab')" id="dm-tab-add-vocab" class="flex-1 py-1.5 rounded-lg text-xs font-bold theme-primary">단어·숙어 추가</button>
+                <button onclick="switchDataModalTab('add-speaking')" id="dm-tab-add-speaking" class="flex-1 py-1.5 rounded-lg text-xs font-medium theme-text-muted">문장·질문 추가</button>
+                <button onclick="switchDataModalTab('pack')" id="dm-tab-pack" class="flex-1 py-1.5 rounded-lg text-xs font-medium theme-text-muted">데이터 팩 확장</button>
+            </div>
+
+            <!-- 1. 단어·숙어 직접 추가 폼 -->
+            <form id="form-add-vocab" onsubmit="handleAddCustomVocab(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">주제 선택</label>
+                    <select id="custom-vocab-topic" class="w-full p-2.5 rounded-xl border theme-border theme-bg-soft text-xs font-medium"></select>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">영어 단어 / 숙어 *</label>
+                        <input type="text" id="custom-vocab-word" required placeholder="예: make up my mind" class="w-full p-2.5 rounded-xl border theme-border text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">한국어 뜻 *</label>
+                        <input type="text" id="custom-vocab-meaning" required placeholder="예: 결심하다" class="w-full p-2.5 rounded-xl border theme-border text-xs">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">영어 활용 예문 *</label>
+                    <input type="text" id="custom-vocab-ex-en" required placeholder="예: I finally made up my mind to study English." class="w-full p-2.5 rounded-xl border theme-border text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">예문 한국어 해석</label>
+                    <input type="text" id="custom-vocab-ex-ko" placeholder="예: 나는 마침내 영어 공부를 하기로 결심했다." class="w-full p-2.5 rounded-xl border theme-border text-xs">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl text-sm font-bold theme-primary transition">
+                    + 단어장에 바로 저장하기
+                </button>
+            </form>
+
+            <!-- 2. 문장·회화 스크립트 직접 추가 폼 -->
+            <form id="form-add-speaking" onsubmit="handleAddCustomSpeaking(event)" class="hidden space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">주제 선택</label>
+                    <select id="custom-spk-topic" class="w-full p-2.5 rounded-xl border theme-border theme-bg-soft text-xs font-medium"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">예상 질문 (Question) *</label>
+                    <input type="text" id="custom-spk-q" required placeholder="예: What kind of music do you like?" class="w-full p-2.5 rounded-xl border theme-border text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">영어 답변 문장들 (줄바꿈으로 여러 문장 입력) *</label>
+                    <textarea id="custom-spk-en" rows="3" required placeholder="I usually listen to K-pop when I commute.&#10;It really helps lift my mood." class="w-full p-2.5 rounded-xl border theme-border text-xs"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">한국어 해석 (줄바꿈으로 순서대로 입력)</label>
+                    <textarea id="custom-spk-ko" rows="2" placeholder="저는 보통 출퇴근할 때 케이팝을 듣습니다.&#10;제 기분을 좋게 만드는 데 정말 도움이 됩니다." class="w-full p-2.5 rounded-xl border theme-border text-xs"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl text-sm font-bold theme-primary transition">
+                    + 회화 스튜디오에 저장하기
+                </button>
+            </form>
+
+            <!-- 3. 데이터 팩 가져오기 / 내보내기 (Stage 11+ 확장용) -->
+            <div id="panel-data-pack" class="hidden space-y-3">
+                <p class="text-xs theme-text-muted leading-relaxed">
+                    새로운 Stage 데이터 팩(JSON 코드)을 아래에 붙여넣으면 콘텐츠가 즉시 확장됩니다. 내가 만든 데이터를 백업해 지인에게 공유할 수도 있습니다.
+                </p>
+                <textarea id="data-pack-textarea" rows="5" placeholder='여기에 데이터 팩 JSON 코드를 붙여넣으세요...' class="w-full p-2.5 rounded-xl border theme-border text-xs font-mono theme-bg-soft"></textarea>
+                <div class="flex gap-2">
+                    <button onclick="importDataPack()" class="flex-1 py-2.5 rounded-xl text-xs font-bold theme-primary transition">
+                        📥 데이터 팩 불러오기
+                    </button>
+                    <button onclick="exportCustomDataPack()" class="flex-1 py-2.5 rounded-xl text-xs font-semibold theme-accent transition">
+                        📤 내 데이터 복사하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 알림창 -->
+    <div id="toast-box" class="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 z-50 hidden">
+        <div id="toast-message" class="px-4 py-2.5 rounded-full text-xs font-medium bg-gray-900 text-white shadow-lg">
+            알림 메시지
+        </div>
+    </div>
+
+    <script>
+        // ==================== 1. 오픽(OPIc) 10 STAGE 데이터베이스 ====================
+        const SURVEY_TOPICS = [
+            { id: 'movies', category: '여가 활동', title: '영화 보기 (Watching Movies)', recommended: true },
+            { id: 'cafes', category: '여가 활동', title: '카페/레스토랑 가기 (Cafes)', recommended: true },
+            { id: 'music', category: '취미/관심사', title: '음악 감상하기 (Listening to Music)', recommended: true },
+            { id: 'jogging', category: '운동', title: '걷기 / 조깅 (Walking & Jogging)', recommended: true },
+            { id: 'vacation', category: '휴가/여행', title: '국내 여행 / 집에서 보내는 휴가', recommended: true },
+            { id: 'shopping', category: '여가 활동', title: '쇼핑하기 (Shopping)', recommended: false },
+            { id: 'cooking', category: '취미/관심사', title: '요리하기 (Cooking)', recommended: false },
+            { id: 'fitness', category: '운동', title: '헬스 / 웨이트 트레이닝 (Working Out)', recommended: false },
+            { id: 'overseas', category: '휴가/여행', title: '해외 여행 (Overseas Travel)', recommended: false }
+        ];
+
+        const CORE_TOPICS = [
+            { id: 'fillers', title: '만능 필러 & 연결어' },
+            { id: 'housing', title: '집 / 거주지 (필수)' },
+            { id: 'tech', title: '돌발: 스마트폰/기술' },
+            { id: 'weather', title: '돌발: 날씨/계절' },
+            { id: 'roleplay', title: '롤플레이 (11~13번)' }
+        ];
+
+        // Stage 1 ~ Stage 10 기본 내장 단어 & 구동사 데이터
+        const BASE_VOCAB_DATA = [
+            // --- STAGE 1: 기초 필수 표현 & 집/여가 ---
+            { stage: 1, topicId: 'fillers', topicName: '만능 필러 & 연결어', word: 'To be honest with you,', meaning: '솔직히 말씀드리면,', exEn: 'To be honest with you, I am a huge fan of action movies.', exKo: '솔직히 말씀드리면, 저는 액션 영화의 엄청난 팬입니다.' },
+            { stage: 1, topicId: 'fillers', topicName: '만능 필러 & 연결어', word: 'On top of that,', meaning: '게다가, 그뿐만 아니라', exEn: 'The cafe has great coffee. On top of that, the vibe is amazing.', exKo: '그 카페는 커피가 훌륭해요. 게다가 분위기도 끝내줍니다.' },
+            { stage: 1, topicId: 'housing', topicName: '집 / 거주지', word: 'cozy', meaning: '아늑한, 포근한', exEn: 'My bedroom is small, but it feels very cozy and warm.', exKo: '제 침실은 작지만 매우 아늑하고 따뜻한 느낌이 듭니다.' },
+            { stage: 1, topicId: 'housing', topicName: '집 / 거주지', word: 'hang out', meaning: '시간을 보내다, 어울리다', exEn: 'I usually hang out in my room watching YouTube after work.', exKo: '저는 보통 퇴근 후 제 방에서 유튜브를 보며 시간을 보냅니다.' },
+            { stage: 1, topicId: 'movies', topicName: '영화 보기', word: 'stress reliever', meaning: '스트레스 해소제', exEn: 'Watching movies on weekends is my favorite stress reliever.', exKo: '주말에 영화를 보는 것은 제가 가장 좋아하는 스트레스 해소법입니다.' },
+            { stage: 1, topicId: 'cafes', topicName: '카페 가기', word: 'unwind', meaning: '긴장을 풀다, 휴식을 취하다', exEn: 'Whenever I feel stressed, I go to a cafe to unwind.', exKo: '스트레스를 받을 때마다 저는 긴장을 풀기 위해 카페에 갑니다.' },
+            { stage: 1, topicId: 'jogging', topicName: '걷기 / 조깅', word: 'keep in shape', meaning: '건강과 몸매를 유지하다', exEn: 'I try to jog three times a week to keep in shape.', exKo: '건강을 유지하기 위해 일주일에 세 번 조깅하려고 노력합니다.' },
+            { stage: 1, topicId: 'vacation', topicName: '국내 여행 / 휴가', word: 'get away from', meaning: '~에서 벗어나다', exEn: 'Last summer, I went to Busan to get away from my busy routine.', exKo: '지난여름, 바쁜 일상에서 벗어나기 위해 부산에 갔습니다.' },
+
+            // --- STAGE 2: 묘사 디테일 확장 ---
+            { stage: 2, topicId: 'housing', topicName: '집 / 거주지', word: 'rearrange the furniture', meaning: '가구를 재배치하다', exEn: 'Recently, I rearranged the furniture to make my room look bigger.', exKo: '최근에 방이 더 넓어 보이도록 가구를 재배치했습니다.' },
+            { stage: 2, topicId: 'housing', topicName: '집 / 거주지', word: 'spacious', meaning: '넓은, 널찍한', exEn: 'Our living room is quite spacious, so we often gather there.', exKo: '우리 집 거실은 꽤 넓어서 가족들이 자주 거기 모입니다.' },
+            { stage: 2, topicId: 'movies', topicName: '영화 보기', word: 'grab a bite', meaning: '간단히 요기하다, 식사하다', exEn: 'After the movie, my friends and I usually grab a bite nearby.', exKo: '영화가 끝난 후, 친구들과 저는 보통 근처에서 간단히 식사를 합니다.' },
+            { stage: 2, topicId: 'cafes', topicName: '카페 가기', word: 'catch up with', meaning: '~와 밀린 이야기를 나누다', exEn: 'I met my close friend at a cafe to catch up with each other.', exKo: '서로 밀린 이야기를 나누기 위해 카페에서 친한 친구를 만났습니다.' },
+            { stage: 2, topicId: 'music', topicName: '음악 감상하기', word: 'lift my mood', meaning: '기분을 좋게 하다', exEn: 'Listening to upbeat pop songs always helps lift my mood.', exKo: '경쾌한 팝송을 듣는 것은 항상 제 기분을 좋게 만들어 줍니다.' },
+
+            // --- STAGE 3: 과거 경험 & 감정 표현 ---
+            { stage: 3, topicId: 'fillers', topicName: '만능 필러 & 연결어', word: 'Come to think of it,', meaning: '생각해 보니,', exEn: 'Come to think of it, I went there last summer with my family.', exKo: '생각해 보니, 지난여름에 가족들과 거기에 갔었네요.' },
+            { stage: 3, topicId: 'fillers', topicName: '만능 필러 & 연결어', word: 'Long story short,', meaning: '긴 이야기를 짧게 줄이자면,', exEn: 'Long story short, it was one of the best days of my life.', exKo: '요약하자면, 제 인생 최고의 날 중 하루였습니다.' },
+            { stage: 3, topicId: 'jogging', topicName: '걷기 / 조깅', word: 'clear my mind', meaning: '머리를 식히다', exEn: 'Breathing in the fresh air really helps me clear my mind.', exKo: '신선한 공기를 마시는 것은 정말 머리를 식히는 데 도움이 됩니다.' },
+            { stage: 3, topicId: 'vacation', topicName: '국내 여행 / 휴가', word: 'worth visiting', meaning: '방문할 가치가 있는', exEn: 'If you ever travel to Korea, Jeju Island is definitely worth visiting.', exKo: '한국에 여행 오신다면 제주도는 분명 방문할 가치가 있습니다.' },
+
+            // --- STAGE 4: 돌발 주제 1 (스마트폰 & 기술) ---
+            { stage: 4, topicId: 'tech', topicName: '돌발: 스마트폰/기술', word: "can't live without", meaning: '~없이는 못 살다', exEn: "Honestly, I can't live without my smartphone these days.", exKo: '솔직히 요즘 저는 스마트폰 없이는 살 수 없습니다.' },
+            { stage: 4, topicId: 'tech', topicName: '돌발: 스마트폰/기술', word: 'keep in touch with', meaning: '~와 연락을 유지하다', exEn: 'I use messaging apps to keep in touch with my friends.', exKo: '친구들과 연락을 유지하기 위해 메신저 앱을 사용합니다.' },
+            { stage: 4, topicId: 'tech', topicName: '돌발: 스마트폰/기술', word: 'glitch', meaning: '일시적 오류, 결함', exEn: 'Yesterday, my phone had a sudden glitch and froze.', exKo: '어제 제 핸드폰에 갑작스러운 오류가 생겨 멈춰버렸습니다.' },
+
+            // --- STAGE 5: 롤플레이 11번 (질문하기 만능 패턴) ---
+            { stage: 5, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', word: "I'm calling to ask about ~", meaning: '~에 대해 문의하려고 전화했습니다', exEn: "Hello, I'm calling to ask about renting a bike at your shop.", exKo: '안녕하세요, 가게에서 자전거를 대여하는 것에 대해 문의하려고 전화했습니다.' },
+            { stage: 5, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', word: 'Could you tell me if ~?', meaning: '~인지 알려주실 수 있나요?', exEn: 'Could you tell me if I need to make a reservation in advance?', exKo: '미리 예약을 해야 하는지 알려주실 수 있나요?' },
+            { stage: 5, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', word: 'How much does it cost to ~?', meaning: '~하는 데 비용이 얼마나 드나요?', exEn: 'How much does it cost to rent a tent for a day?', exKo: '하루 동안 텐트를 빌리는 데 비용이 얼마나 드나요?' },
+
+            // --- STAGE 6: 취미 & 여가 심화 (쇼핑/요리/헬스) ---
+            { stage: 6, topicId: 'shopping', topicName: '쇼핑하기', word: 'window shopping', meaning: '아이쇼핑 (구경만 하는 쇼핑)', exEn: 'Sometimes I just enjoy window shopping at the mall on weekends.', exKo: '때때로 주말에 쇼핑몰에서 그냥 아이쇼핑하는 것을 즐깁니다.' },
+            { stage: 6, topicId: 'cooking', topicName: '요리하기', word: 'from scratch', meaning: '처음부터 직접 (재료를 다듬어)', exEn: 'I enjoy cooking healthy meals from scratch at home.', exKo: '집에서 처음부터 직접 건강한 식사를 요리하는 것을 즐깁니다.' },
+            { stage: 6, topicId: 'fitness', topicName: '헬스 / 운동', word: 'work out', meaning: '운동하다', exEn: 'I usually work out at the gym for an hour after work.', exKo: '저는 보통 퇴근 후 헬스장에서 한 시간 동안 운동합니다.' },
+
+            // --- STAGE 7: 돌발 주제 2 (날씨 & 계절) ---
+            { stage: 7, topicId: 'weather', topicName: '돌발: 날씨/계절', word: 'chilly', meaning: '쌀쌀한', exEn: 'The weather gets quite chilly in the evening during autumn.', exKo: '가을에는 저녁에 날씨가 꽤 쌀쌀해집니다.' },
+            { stage: 7, topicId: 'weather', topicName: '돌발: 날씨/계절', word: 'scorching hot', meaning: '타는 듯이 더운, 폭염의', exEn: 'Last summer was scorching hot, so I stayed indoors most of the time.', exKo: '지난여름은 타는 듯이 더워서 대부분의 시간 동안 실내에 있었습니다.' },
+            { stage: 7, topicId: 'weather', topicName: '돌발: 날씨/계절', word: 'out of nowhere', meaning: '갑자기, 난데없이', exEn: 'While I was walking, it started raining heavily out of nowhere.', exKo: '걷고 있는 도중에 난데없이 비가 쏟아지기 시작했습니다.' },
+
+            // --- STAGE 8: 롤플레이 12번 (문제 해결 & 대안 제시) ---
+            { stage: 8, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', word: 'Something came up', meaning: '갑작스러운 일이 생겼어요', exEn: "I'm really sorry, but something urgent came up at work.", exKo: '정말 죄송하지만 직장에 급한 일이 생겼습니다.' },
+            { stage: 8, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', word: 'make it up to you', meaning: '(실수·약속 취소 등을) 만회하다, 보답하다', exEn: 'I promise I will make it up to you next weekend.', exKo: '다음 주말에 꼭 만회하겠다고 약속할게요.' },
+            { stage: 8, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', word: 'reschedule', meaning: '일정을 변경하다', exEn: 'Would it be possible to reschedule our appointment to Friday?', exKo: '우리 약속을 금요일로 변경할 수 있을까요?' },
+
+            // --- STAGE 9: 비교 & 변화 표현 (과거 vs 현재) ---
+            { stage: 9, topicId: 'fillers', topicName: '만능 필러 & 연결어', word: 'used to ~', meaning: '(과거에는) ~하곤 했다', exEn: 'I used to watch movies at the theater, but now I use streaming apps.', exKo: '예전에는 극장에서 영화를 보곤 했지만, 지금은 스트리밍 앱을 씁니다.' },
+            { stage: 9, topicId: 'overseas', topicName: '해외 여행', word: 'breathtaking', meaning: '숨이 멎을 듯이 아름다운', exEn: 'The night view from the tower was truly breathtaking.', exKo: '타워에서 바라본 야경은 정말 숨이 멎을 듯이 아름다웠습니다.' },
+            { stage: 9, topicId: 'movies', topicName: '영화 보기', word: 'plot twist', meaning: '줄거리의 반전', exEn: 'The movie had an unexpected plot twist at the very end.', exKo: '그 영화는 맨 마지막에 예상치 못한 반전이 있었습니다.' },
+
+            // --- STAGE 10: IH 도약 고득점 표현 마스터 ---
+            { stage: 10, topicId: 'fillers', topicName: '만능 필러 & 연결어', word: 'At the end of the day,', meaning: '결국에는, 무엇보다도', exEn: 'At the end of the day, health is the most important thing in life.', exKo: '결국 인생에서 가장 중요한 것은 건강입니다.' },
+            { stage: 10, topicId: 'housing', topicName: '집 / 거주지', word: 'get rid of', meaning: '~을 없애다, 처분하다', exEn: 'I decided to get rid of old clothes I do not wear anymore.', exKo: '더 이상 입지 않는 낡은 옷들을 처분하기로 결심했습니다.' },
+            { stage: 10, topicId: 'cafes', topicName: '카페 가기', word: 'recharge my batteries', meaning: '에너지를 재충전하다', exEn: 'Spending quiet time alone at a cafe helps me recharge my batteries.', exKo: '카페에서 혼자 조용한 시간을 보내는 것은 재충전에 도움이 됩니다.' }
+        ];
+
+        // Stage 1 ~ Stage 10 기본 내장 문장 & 회화 스크립트
+        const BASE_SPEAKING_DATA = [
+            // Stage 1
+            {
+                stage: 1, topicId: 'housing', topicName: '집 / 거주지', type: '묘사 (Description)',
+                question: 'Tell me about your home. What does it look like?',
+                keywords: 'apartment, cozy, rearranged the furniture, hang out',
+                sentences: [
+                    { en: 'I live in an apartment with my family in Korea.', ko: '저는 한국에서 가족들과 함께 아파트에 살고 있습니다.', key: 'live in an apartment' },
+                    { en: 'My favorite place is my bedroom because it is very cozy and quiet.', ko: '제가 가장 좋아하는 공간은 매우 아늑하고 조용한 제 침실입니다.', key: 'cozy and quiet' },
+                    { en: 'Recently, I rearranged the furniture to make the room look more spacious.', ko: '최근에 방이 더 넓어 보이도록 가구를 재배치했습니다.', key: 'rearranged the furniture' },
+                    { en: 'I usually hang out in my room watching YouTube videos after work.', ko: '저는 보통 퇴근 후에 제 방에서 유튜브 영상을 보며 시간을 보냅니다.', key: 'hang out' }
+                ]
+            },
+            {
+                stage: 1, topicId: 'movies', topicName: '영화 보기', type: '루틴 (Routine)',
+                question: 'What do you usually do before and after watching a movie?',
+                keywords: 'stress reliever, snack bar, grab a bite, plot',
+                sentences: [
+                    { en: 'Watching movies is my favorite stress reliever on weekends.', ko: '주말에 영화를 보는 것은 제가 가장 좋아하는 스트레스 해소법입니다.', key: 'stress reliever' },
+                    { en: 'Before the movie starts, I always buy popcorn and a drink at the snack bar.', ko: '영화가 시작하기 전에, 저는 항상 매점에서 팝콘과 음료를 삽니다.', key: 'Before the movie starts' },
+                    { en: 'After the movie, my friends and I usually grab a bite at a nearby restaurant.', ko: '영화가 끝난 후, 친구들과 저는 보통 근처 식당에서 간단히 요기를 합니다.', key: 'grab a bite' },
+                    { en: 'We love talking about the plot and our favorite scenes together.', ko: '우리는 함께 줄거리와 가장 좋았던 장면에 대해 이야기하는 것을 좋아합니다.', key: 'plot' }
+                ]
+            },
+            // Stage 2
+            {
+                stage: 2, topicId: 'cafes', topicName: '카페 가기', type: '습관 & 이유',
+                question: 'Why do you like going to cafes, and what do you usually do there?',
+                keywords: 'To be honest with you, vibe, unwind, catch up with',
+                sentences: [
+                    { en: 'To be honest with you, I really love the cozy vibe of neighborhood cafes.', ko: '솔직히 말씀드리면, 저는 동네 카페의 아늑한 분위기를 정말 좋아합니다.', key: 'To be honest with you' },
+                    { en: 'Whenever I feel stressed, I go to my favorite cafe to unwind.', ko: '스트레스를 받을 때마다 저는 긴장을 풀기 위해 단골 카페에 갑니다.', key: 'unwind' },
+                    { en: 'On top of that, their iced Americano and desserts are delicious.', ko: '게다가 그곳의 아이스 아메리카노와 디저트도 정말 맛있습니다.', key: 'On top of that' },
+                    { en: 'I usually listen to music or catch up with my close friends for hours.', ko: '저는 보통 음악을 듣거나 친한 친구들과 몇 시간씩 밀린 이야기를 나눕니다.', key: 'catch up with' }
+                ]
+            },
+            // Stage 3
+            {
+                stage: 3, topicId: 'jogging', topicName: '걷기 / 조깅', type: '과거 경험 (Past)',
+                question: 'Tell me about a memorable experience you had while jogging.',
+                keywords: 'keep in shape, breathtaking, clear my mind, Long story short',
+                sentences: [
+                    { en: 'I usually jog at the park near my house to keep in shape.', ko: '저는 건강을 유지하기 위해 보통 집 근처 공원에서 조깅을 합니다.', key: 'keep in shape' },
+                    { en: 'A few weeks ago, I went jogging in the evening and saw a breathtaking sunset.', ko: '몇 주 전 저녁에 조깅을 나갔다가 숨이 멎을 듯 아름다운 일몰을 보았습니다.', key: 'breathtaking' },
+                    { en: 'Breathing in the fresh air really helped me clear my mind.', ko: '신선한 공기를 마시는 것이 정말 머리를 식히는 데 큰 도움이 되었습니다.', key: 'clear my mind' },
+                    { en: 'Long story short, it was such an unforgettable moment for me.', ko: '요약하자면, 저에게 정말 잊지 못할 순간이었습니다.', key: 'Long story short' }
+                ]
+            },
+            // Stage 4
+            {
+                stage: 4, topicId: 'tech', topicName: '돌발: 스마트폰/기술', type: '돌발 주제 (Tech)',
+                question: 'How has technology or your smartphone changed your daily life?',
+                keywords: "can't live without, keep in touch with, convenient",
+                sentences: [
+                    { en: "Honestly, I can't live without my smartphone these days.", ko: '솔직히 요즘 저는 제 스마트폰 없이는 살 수 없습니다.', key: "can't live without" },
+                    { en: 'I use it every day to keep in touch with my friends and family.', ko: '저는 친구나 가족들과 연락을 유지하기 위해 매일 스마트폰을 사용합니다.', key: 'keep in touch with' },
+                    { en: 'On top of that, I can easily check the news and study English anywhere.', ko: '게다가 어디서든 쉽게 뉴스를 확인하고 영어 공부도 할 수 있습니다.', key: 'On top of that' },
+                    { en: 'It definitely makes my daily life much more convenient.', ko: '스마트폰은 분명 제 일상을 훨씬 더 편리하게 만들어 줍니다.', key: 'much more convenient' }
+                ]
+            },
+            // Stage 5
+            {
+                stage: 5, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', type: '11번 질문하기',
+                question: 'You want to rent a bike at a park. Call the shop and ask 3~4 questions.',
+                keywords: "I'm calling to ask about, how much does it cost, could you tell me if",
+                sentences: [
+                    { en: "Hello, I'm calling to ask about renting a bike at your shop.", ko: '안녕하세요, 가게에서 자전거를 대여하는 것에 대해 문의하려고 전화했습니다.', key: "I'm calling to ask about" },
+                    { en: 'First, how much does it cost to rent a bike for two hours?', ko: '먼저, 두 시간 동안 자전거를 빌리는 데 비용이 얼마나 드나요?', key: 'how much does it cost' },
+                    { en: 'Also, could you tell me if I need to bring my ID card?', ko: '또한, 신분증을 지참해야 하는지 알려주실 수 있나요?', key: 'could you tell me if' },
+                    { en: 'Lastly, do you provide helmets for free? Thank you!', ko: '마지막으로 헬멧은 무료로 제공해 주시나요? 감사합니다!', key: 'for free' }
+                ]
+            },
+            // Stage 6
+            {
+                stage: 6, topicId: 'vacation', topicName: '국내 여행 / 휴가', type: '장소 묘사 & 경험',
+                question: 'Tell me about a memorable place you visited during your vacation.',
+                keywords: 'get away from, scenery, local food, worth visiting',
+                sentences: [
+                    { en: 'Last summer, I went to Busan to get away from my busy daily routine.', ko: '지난여름, 바쁜 일상에서 벗어나기 위해 부산에 다녀왔습니다.', key: 'get away from' },
+                    { en: 'The ocean scenery was amazing, and the weather was super nice.', ko: '바다 풍경이 정말 멋졌고, 날씨도 무척 좋았습니다.', key: 'scenery' },
+                    { en: 'I also tried a lot of delicious local food at traditional markets.', ko: '또한 전통 시장에서 맛있는 현지 음식도 많이 먹어보았습니다.', key: 'local food' },
+                    { en: 'If you ever visit Korea, Busan is definitely worth visiting.', ko: '한국에 방문하실 일이 있다면 부산은 분명 가볼 가치가 있습니다.', key: 'worth visiting' }
+                ]
+            },
+            // Stage 7
+            {
+                stage: 7, topicId: 'weather', topicName: '돌발: 날씨/계절', type: '돌발 경험 (Weather)',
+                question: 'Tell me about a memorable experience you had because of unexpected weather.',
+                keywords: 'out of nowhere, soaked, grab a bite, Long story short',
+                sentences: [
+                    { en: 'A few months ago, I went to the park on a sunny afternoon.', ko: '몇 달 전, 화창한 오후에 공원에 갔었습니다.', key: 'sunny afternoon' },
+                    { en: 'However, dark clouds appeared and it started raining heavily out of nowhere.', ko: '하지만 먹구름이 몰려오더니 난데없이 비가 쏟아지기 시작했습니다.', key: 'out of nowhere' },
+                    { en: 'I did not have an umbrella, so I ran into a nearby cafe to stay dry.', ko: '우산이 없어서 비를 피하려고 근처 카페로 뛰어 들어갔습니다.', key: 'nearby cafe' },
+                    { en: 'Long story short, I ended up enjoying a warm cup of coffee while watching the rain.', ko: '요약하자면, 결국 빗소리를 들으며 따뜻한 커피 한 잔을 즐기게 되었습니다.', key: 'Long story short' }
+                ]
+            },
+            // Stage 8
+            {
+                stage: 8, topicId: 'roleplay', topicName: '롤플레이 (11~13번)', type: '12번 대안 제시',
+                question: 'You promised to meet your friend for dinner, but you have to cancel. Explain and suggest alternatives.',
+                keywords: 'Something came up, reschedule, make it up to you',
+                sentences: [
+                    { en: "Hi Sarah, I'm calling because I won't be able to make it to dinner tonight.", ko: '안녕 사라, 오늘 저녁 식사에 못 갈 것 같아서 전화했어.', key: "won't be able to make it" },
+                    { en: 'Something urgent came up at work, so I have to work late.', ko: '직장에 급한 일이 생겨서 야근을 해야 해.', key: 'Something urgent came up' },
+                    { en: 'Could we reschedule our dinner to this Friday evening instead?', ko: '대신 이번 주 금요일 저녁으로 약속을 변경할 수 있을까?', key: 'reschedule' },
+                    { en: 'I will buy you dinner and dessert to make it up to you!', ko: '만회하기 위해 내가 저녁이랑 디저트까지 다 살게!', key: 'make it up to you' }
+                ]
+            },
+            // Stage 9
+            {
+                stage: 9, topicId: 'music', topicName: '음악 감상하기', type: '과거와 현재 비교',
+                question: 'How has the way you listen to music changed compared to the past?',
+                keywords: 'used to, streaming apps, lift my mood',
+                sentences: [
+                    { en: 'In the past, I used to download MP3 files onto my computer one by one.', ko: '과거에는 컴퓨터에 MP3 파일을 하나씩 다운로드하곤 했습니다.', key: 'used to' },
+                    { en: 'However, nowadays I just use music streaming apps on my smartphone.', ko: '하지만 요즘은 그냥 스마트폰으로 음악 스트리밍 앱을 사용합니다.', key: 'streaming apps' },
+                    { en: 'It recommends great playlists that always help lift my mood.', ko: '항상 제 기분을 좋게 만들어 주는 멋진 플레이리스트를 추천해 줍니다.', key: 'lift my mood' },
+                    { en: 'As a result, listening to music has become much easier and more enjoyable.', ko: '그 결과, 음악을 듣는 것이 훨씬 더 쉽고 즐거워졌습니다.', key: 'As a result' }
+                ]
+            },
+            // Stage 10
+            {
+                stage: 10, topicId: 'housing', topicName: '집 / 거주지', type: '집안일 & 변화 (IH 도약)',
+                question: 'Tell me about how you keep your home clean and organized.',
+                keywords: 'get rid of, spacious, recharge my batteries, At the end of the day',
+                sentences: [
+                    { en: 'I try to clean my room every Sunday morning to keep it neat.', ko: '방을 깔끔하게 유지하기 위해 매주 일요일 아침마다 청소를 하려고 합니다.', key: 'keep it neat' },
+                    { en: 'Last weekend, I decided to get rid of old things I do not use anymore.', ko: '지난 주말에는 더 이상 쓰지 않는 오래된 물건들을 처분하기로 결심했습니다.', key: 'get rid of' },
+                    { en: 'Now my room looks much more spacious, which helps me recharge my batteries.', ko: '이제 방이 훨씬 더 넓어 보여서 에너지를 재충전하는 데 큰 도움이 됩니다.', key: 'recharge my batteries' },
+                    { en: 'At the end of the day, a clean home makes me feel happy and relaxed.', ko: '결국 깨끗한 집은 저를 행복하고 편안하게 만들어 줍니다.', key: 'At the end of the day' }
+                ]
+            }
+        ];
+
+        // ==================== 2. 상태 관리 & LocalStorage 영구 저장 ====================
+        const STORAGE_KEY = 'opic_focus_app_state_v2';
+
+        let state = {
+            theme: 'sage',
+            goal: 'IM3',
+            activeTab: 'survey',
+            selectedSurveys: ['movies', 'cafes', 'music', 'jogging', 'vacation'],
+            unlockedStage: 1, // 현재 해금된 최고 Stage (1 ~ maxStage)
+            // 학습 필터 상태
+            vocabStageFilter: 'unlocked', // 'unlocked' 또는 특정 숫자
+            vocabTopicFilter: 'all',
+            onlyBookmarks: false,
+            bookmarks: ['To be honest with you,', 'unwind', 'get away from'],
+            vocabIndex: 0,
+            vocabShowBack: true,
+            // 회화 필터 상태
+            speakingStageFilter: 'unlocked',
+            speakingTopicFilter: 'all',
+            speakingIndex: 0,
+            showKorean: true,
+            // 사용자 커스텀 데이터 (확장용)
+            customVocab: [],
+            customSpeaking: [],
+            // 녹음 상태
+            isRecording: false,
+            recordingTarget: null, // 'studio' | 'test'
+            mediaRecorder: null,
+            audioChunks: [],
+            // 미니 테스트 진행 상태
+            quizQuestions: [],
+            quizCurrentIdx: 0,
+            quizScore: 0
+        };
+
+        function loadStateFromStorage() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed, isRecording: false, mediaRecorder: null };
+                }
+            } catch (e) {
+                console.warn('저장된 상태를 불러오는 중 오류 발생:', e);
+            }
+        }
+
+        function saveStateToStorage() {
+            try {
+                const toSave = {
+                    theme: state.theme,
+                    goal: state.goal,
+                    selectedSurveys: state.selectedSurveys,
+                    unlockedStage: state.unlockedStage,
+                    bookmarks: state.bookmarks,
+                    customVocab: state.customVocab,
+                    customSpeaking: state.customSpeaking
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+            } catch (e) {
+                console.warn('상태 저장 실패:', e);
+            }
+        }
+
+        // 전체 통합 데이터 Getter (기본 + 사용자 추가/확장 데이터)
+        function getAllVocab() {
+            return [...BASE_VOCAB_DATA, ...state.customVocab];
+        }
+
+        function getAllSpeaking() {
+            return [...BASE_SPEAKING_DATA, ...state.customSpeaking];
+        }
+
+        function getMaxStage() {
+            const vMax = Math.max(...getAllVocab().map(v => v.stage || 1), 10);
+            const sMax = Math.max(...getAllSpeaking().map(s => s.stage || 1), 10);
+            return Math.max(vMax, sMax);
+        }
+
+        // ==================== 3. 테마 & 목표 등급 설정 ====================
+        function setTheme(themeName) {
+            state.theme = themeName;
+            document.documentElement.setAttribute('data-theme', themeName);
+
+            const ringColors = {
+                sage: 'ring-[#5D826B]',
+                lavender: 'ring-[#7B6BA8]',
+                peach: 'ring-[#C97A57]',
+                sky: 'ring-[#5482A9]'
+            };
+
+            document.querySelectorAll('.theme-dot').forEach(btn => {
+                const t = btn.getAttribute('data-theme-btn');
+                if (t === themeName) {
+                    btn.classList.remove('opacity-70');
+                    btn.classList.add('ring-2', 'ring-offset-1', ringColors[t], 'scale-110');
+                } else {
+                    btn.className = `theme-dot w-4 h-4 rounded-full transition-transform hover:scale-110 opacity-70 ${
+                        t === 'sage' ? 'bg-[#5D826B]' : t === 'lavender' ? 'bg-[#7B6BA8]' : t === 'peach' ? 'bg-[#C97A57]' : 'bg-[#5482A9]'
+                    }`;
+                }
+            });
+
+            updateNavStyles();
+            saveStateToStorage();
+        }
+
+        function openGoalModal() {
+            document.getElementById('goal-modal').classList.remove('hidden');
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goal-modal').classList.add('hidden');
+        }
+
+        function selectGoal(goalLevel) {
+            state.goal = goalLevel;
+            document.getElementById('header-goal-badge').textContent = goalLevel;
+
+            const strategies = {
+                'IM1~2': '💡 IM1~2 공략: 완벽한 문법보다 주어+동사를 갖춘 완전한 문장으로 끝까지 대답하는 연습에 집중하세요.',
+                'IM3': '💡 IM3 공략: 단답형을 피하고 연결어와 과거 시제를 활용해 3~4문장으로 자연스럽게 이어 말하세요.',
+                'IH~AL': '💡 IH~AL 공략: 감정 형용사와 풍부한 구동사를 섞어 쓰고, 질문의 의도에 맞게 디테일한 에피소드를 묘사하세요.'
+            };
+            document.getElementById('goal-strategy-text').textContent = strategies[goalLevel];
+            closeGoalModal();
+            saveStateToStorage();
+            showToast(`목표 등급이 ${goalLevel}로 설정되었습니다.`);
+        }
+
+        function updateHeaderStageUI() {
+            document.getElementById('header-stage-badge').textContent = state.unlockedStage;
+            document.getElementById('header-max-stage').textContent = getMaxStage();
+        }
+
+        // ==================== 4. 탭 네비게이션 ====================
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+            updateNavStyles();
+
+            if (tabName === 'vocab') {
+                renderVocabStageFilters();
+                renderVocabTopicFilters();
+                renderVocabCard();
+            } else if (tabName === 'speaking') {
+                renderSpeakingStageFilters();
+                renderSpeakingTopicFilters();
+                renderSpeakingCard();
+            } else if (tabName === 'test') {
+                renderTestRoadmap();
+            }
+        }
+
+        function updateNavStyles() {
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                const isActive = btn.getAttribute('data-tab') === state.activeTab;
+                btn.className = isActive
+                    ? 'nav-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all theme-primary shadow-2xs'
+                    : 'nav-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all theme-text-muted hover:theme-text-main';
+            });
+
+            document.querySelectorAll('.mobile-nav-tab').forEach(btn => {
+                const isActive = btn.getAttribute('data-tab') === state.activeTab;
+                btn.className = isActive
+                    ? 'mobile-nav-tab flex flex-col items-center py-1 px-2.5 rounded-xl text-[11px] font-bold transition theme-accent'
+                    : 'mobile-nav-tab flex flex-col items-center py-1 px-2.5 rounded-xl text-[11px] font-medium transition theme-text-muted';
+            });
+        }
+
+        // ==================== 5. 배경 설문(Survey) 로직 ====================
+        function renderSurveyGrid() {
+            const grid = document.getElementById('survey-grid');
+            grid.innerHTML = '';
+
+            SURVEY_TOPICS.forEach(item => {
+                const isSelected = state.selectedSurveys.includes(item.id);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => toggleSurveyTopic(item.id);
+                btn.className = `p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-2 ${
+                    isSelected 
+                        ? 'theme-accent border-current font-semibold shadow-2xs' 
+                        : 'theme-bg-card theme-border theme-text-muted hover:theme-bg-soft'
+                }`;
+
+                btn.innerHTML = `
+                    <div>
+                        <div class="text-[11px] opacity-75">${item.category}</div>
+                        <div class="text-xs sm:text-sm mt-0.5 ${isSelected ? 'theme-text-main' : ''}">${item.title}</div>
+                    </div>
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                        isSelected ? 'theme-primary' : 'border theme-border bg-white'
+                    }">
+                        ${isSelected ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>' : ''}
+                    </div>
+                `;
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('selected-count').textContent = state.selectedSurveys.length;
+        }
+
+        function toggleSurveyTopic(id) {
+            if (state.selectedSurveys.includes(id)) {
+                if (state.selectedSurveys.length <= 1) {
+                    showToast('최소 1개 이상의 서베이 주제를 선택해 주세요.');
+                    return;
+                }
+                state.selectedSurveys = state.selectedSurveys.filter(t => t !== id);
+            } else {
+                state.selectedSurveys.push(id);
+            }
+            state.vocabTopicFilter = 'all';
+            state.vocabIndex = 0;
+            state.speakingTopicFilter = 'all';
+            state.speakingIndex = 0;
+            renderSurveyGrid();
+            saveStateToStorage();
+        }
+
+        function selectRecommendedSurvey() {
+            state.selectedSurveys = SURVEY_TOPICS.filter(t => t.recommended).map(t => t.id);
+            renderSurveyGrid();
+            saveStateToStorage();
+            showToast('IM3 수험생 선호 추천 5개 주제가 선택되었습니다.');
+        }
+
+        function getActiveTopicIds() {
+            const coreIds = CORE_TOPICS.map(c => c.id);
+            return [...coreIds, ...state.selectedSurveys];
+        }
+
+        // ==================== 6. 단어·숙어 암기장 로직 ====================
+        function getFilteredVocabList() {
+            const activeIds = getActiveTopicIds();
+            return getAllVocab().filter(item => {
+                const itemStage = item.stage || 1;
+                const isUnlocked = itemStage <= state.unlockedStage;
+                if (!isUnlocked) return false;
+
+                const matchesStage = state.vocabStageFilter === 'unlocked' || itemStage === Number(state.vocabStageFilter);
+                const inSurvey = activeIds.includes(item.topicId);
+                const matchesTopic = state.vocabTopicFilter === 'all' || item.topicId === state.vocabTopicFilter;
+                const matchesBookmark = !state.onlyBookmarks || state.bookmarks.includes(item.word);
+                return matchesStage && inSurvey && matchesTopic && matchesBookmark;
+            });
+        }
+
+        function renderVocabStageFilters() {
+            const container = document.getElementById('vocab-stage-filters');
+            const maxSt = getMaxStage();
+            let html = `<button onclick="setVocabStageFilter('unlocked')" class="px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                state.vocabStageFilter === 'unlocked' ? 'theme-primary' : 'theme-bg-soft theme-text-muted'
+            }">해금 전체 (1~${state.unlockedStage})</button>`;
+
+            for (let i = 1; i <= maxSt; i++) {
+                const locked = i > state.unlockedStage;
+                const active = String(state.vocabStageFilter) === String(i);
+                html += `<button onclick="${locked ? `showToast('Stage ${i - 1} 테스트를 통과하면 해금됩니다!')` : `setVocabStageFilter(${i})`}" class="px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                    locked ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : active ? 'theme-primary font-bold' : 'theme-bg-soft theme-text-muted hover:theme-text-main'
+                }">${locked ? '🔒' : ''} Stage ${i}</button>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function setVocabStageFilter(val) {
+            state.vocabStageFilter = val;
+            state.vocabIndex = 0;
+            renderVocabStageFilters();
+            renderVocabCard();
+        }
+
+        function renderVocabTopicFilters() {
+            const container = document.getElementById('vocab-topic-filters');
+            const activeIds = getActiveTopicIds();
+            const allTopics = [
+                { id: 'all', title: '전체 주제' },
+                ...CORE_TOPICS,
+                ...SURVEY_TOPICS.filter(s => activeIds.includes(s.id)).map(s => ({ id: s.id, title: s.title.split(' (')[0] }))
+            ];
+
+            container.innerHTML = allTopics.map(t => `
+                <button onclick="setVocabTopicFilter('${t.id}')" class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                    state.vocabTopicFilter === t.id ? 'theme-accent font-bold border border-current' : 'theme-bg-soft theme-text-muted hover:theme-text-main'
+                }">
+                    ${t.title}
+                </button>
+            `).join('');
+        }
+
+        function setVocabTopicFilter(topicId) {
+            state.vocabTopicFilter = topicId;
+            state.vocabIndex = 0;
+            renderVocabTopicFilters();
+            renderVocabCard();
+        }
+
+        function toggleBookmarkFilter() {
+            state.onlyBookmarks = !state.onlyBookmarks;
+            state.vocabIndex = 0;
+            const btn = document.getElementById('bookmark-filter-btn');
+            btn.classList.toggle('theme-accent', state.onlyBookmarks);
+            renderVocabCard();
+        }
+
+        function renderVocabCard() {
+            const list = getFilteredVocabList();
+            const wordEl = document.getElementById('vocab-word');
+            const meaningEl = document.getElementById('vocab-meaning');
+            const exEnEl = document.getElementById('vocab-example-en');
+            const exKoEl = document.getElementById('vocab-example-ko');
+            const topicEl = document.getElementById('vocab-card-topic');
+            const stageEl = document.getElementById('vocab-card-stage');
+            const counterEl = document.getElementById('vocab-counter');
+            const backContent = document.getElementById('vocab-back-content');
+            const bookmarkIcon = document.getElementById('bookmark-icon');
+
+            if (list.length === 0) {
+                stageEl.textContent = '-';
+                topicEl.textContent = '알림';
+                counterEl.textContent = '0 / 0';
+                wordEl.textContent = '해당 조건의 단어가 없습니다';
+                meaningEl.textContent = 'Stage 전체 또는 다른 주제를 선택해 보세요.';
+                exEnEl.textContent = '';
+                exKoEl.textContent = '';
+                return;
+            }
+
+            if (state.vocabIndex >= list.length) state.vocabIndex = 0;
+            const current = list[state.vocabIndex];
+
+            stageEl.textContent = `Stage ${current.stage || 1}`;
+            topicEl.textContent = current.topicName;
+            counterEl.textContent = `${state.vocabIndex + 1} / ${list.length}`;
+            wordEl.textContent = current.word;
+            meaningEl.textContent = current.meaning;
+            exEnEl.textContent = `"${current.exEn}"`;
+            exKoEl.textContent = current.exKo || '';
+
+            backContent.classList.toggle('opacity-0', !state.vocabShowBack);
+            backContent.classList.toggle('pointer-events-none', !state.vocabShowBack);
+
+            const isBookmarked = state.bookmarks.includes(current.word);
+            bookmarkIcon.setAttribute('fill', isBookmarked ? '#F59E0B' : 'none');
+            bookmarkIcon.setAttribute('stroke', isBookmarked ? '#F59E0B' : 'currentColor');
+        }
+
+        function flipVocabCard() {
+            state.vocabShowBack = !state.vocabShowBack;
+            renderVocabCard();
+        }
+
+        function toggleCurrentBookmark() {
+            const list = getFilteredVocabList();
+            if (!list.length) return;
+            const word = list[state.vocabIndex].word;
+
+            if (state.bookmarks.includes(word)) {
+                state.bookmarks = state.bookmarks.filter(w => w !== word);
+                showToast('북마크에서 해제되었습니다.');
+            } else {
+                state.bookmarks.push(word);
+                showToast('⭐ 북마크에 저장되었습니다.');
+            }
+            saveStateToStorage();
+            renderVocabCard();
+        }
+
+        function nextVocab() {
+            const list = getFilteredVocabList();
+            if (!list.length) return;
+            state.vocabIndex = (state.vocabIndex + 1) % list.length;
+            state.vocabShowBack = true;
+            renderVocabCard();
+        }
+
+        function prevVocab() {
+            const list = getFilteredVocabList();
+            if (!list.length) return;
+            state.vocabIndex = (state.vocabIndex - 1 + list.length) % list.length;
+            state.vocabShowBack = true;
+            renderVocabCard();
+        }
+
+        function speakCurrentVocab(rate = 1.0) {
+            const list = getFilteredVocabList();
+            if (!list.length) return;
+            const item = list[state.vocabIndex];
+            speakText(`${item.word}. ${item.exEn}`, rate);
+        }
+
+        // ==================== 7. 문장 & 회화 스튜디오 로직 ====================
+        function getFilteredSpeakingList() {
+            const activeIds = getActiveTopicIds();
+            return getAllSpeaking().filter(item => {
+                const itemStage = item.stage || 1;
+                if (itemStage > state.unlockedStage) return false;
+
+                const matchesStage = state.speakingStageFilter === 'unlocked' || itemStage === Number(state.speakingStageFilter);
+                const inSurvey = activeIds.includes(item.topicId);
+                const matchesTopic = state.speakingTopicFilter === 'all' || item.topicId === state.speakingTopicFilter;
+                return matchesStage && inSurvey && matchesTopic;
+            });
+        }
+
+        function renderSpeakingStageFilters() {
+            const container = document.getElementById('speaking-stage-filters');
+            const maxSt = getMaxStage();
+            let html = `<button onclick="setSpeakingStageFilter('unlocked')" class="px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                state.speakingStageFilter === 'unlocked' ? 'theme-primary' : 'theme-bg-soft theme-text-muted'
+            }">해금 전체 (1~${state.unlockedStage})</button>`;
+
+            for (let i = 1; i <= maxSt; i++) {
+                const locked = i > state.unlockedStage;
+                const active = String(state.speakingStageFilter) === String(i);
+                html += `<button onclick="${locked ? `showToast('Stage ${i - 1} 테스트를 통과하면 해금됩니다!')` : `setSpeakingStageFilter(${i})`}" class="px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                    locked ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : active ? 'theme-primary font-bold' : 'theme-bg-soft theme-text-muted hover:theme-text-main'
+                }">${locked ? '🔒' : ''} Stage ${i}</button>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function setSpeakingStageFilter(val) {
+            state.speakingStageFilter = val;
+            state.speakingIndex = 0;
+            renderSpeakingStageFilters();
+            renderSpeakingCard();
+        }
+
+        function renderSpeakingTopicFilters() {
+            const container = document.getElementById('speaking-topic-filters');
+            const activeIds = getActiveTopicIds();
+            const allTopics = [
+                { id: 'all', title: '전체 주제' },
+                ...CORE_TOPICS,
+                ...SURVEY_TOPICS.filter(s => activeIds.includes(s.id)).map(s => ({ id: s.id, title: s.title.split(' (')[0] }))
+            ];
+
+            container.innerHTML = allTopics.map(c => `
+                <button onclick="setSpeakingTopicFilter('${c.id}')" class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition ${
+                    state.speakingTopicFilter === c.id ? 'theme-accent font-bold border border-current' : 'theme-bg-soft theme-text-muted hover:theme-text-main'
+                }">
+                    ${c.title}
+                </button>
+            `).join('');
+        }
+
+        function setSpeakingTopicFilter(topicId) {
+            state.speakingTopicFilter = topicId;
+            state.speakingIndex = 0;
+            renderSpeakingTopicFilters();
+            renderSpeakingCard();
+        }
+
+        function renderSpeakingCard() {
+            const list = getFilteredSpeakingList();
+            const listContainer = document.getElementById('speaking-sentences-list');
+
+            if (!list.length) {
+                document.getElementById('speaking-stage-badge').textContent = '-';
+                document.getElementById('speaking-topic-badge').textContent = '알림';
+                document.getElementById('speaking-type-badge').textContent = '';
+                document.getElementById('speaking-question').textContent = '해당 조건의 스크립트가 없습니다. 상단 Stage나 주제를 변경해 보세요.';
+                document.getElementById('speaking-counter').textContent = '0 / 0';
+                listContainer.innerHTML = '';
+                return;
+            }
+
+            if (state.speakingIndex >= list.length) state.speakingIndex = 0;
+            const current = list[state.speakingIndex];
+            const isCloze = document.getElementById('cloze-mode-toggle').checked;
+
+            document.getElementById('speaking-stage-badge').textContent = `Stage ${current.stage || 1}`;
+            document.getElementById('speaking-topic-badge').textContent = current.topicName;
+            document.getElementById('speaking-type-badge').textContent = current.type || '실전 답변';
+            document.getElementById('speaking-question').textContent = `Q. ${current.question}`;
+            document.getElementById('speaking-counter').textContent = `${state.speakingIndex + 1} / ${list.length}`;
+
+            listContainer.innerHTML = current.sentences.map((s, idx) => {
+                let displayEn = s.en;
+                if (isCloze && s.key) {
+                    const escapedKey = s.key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(${escapedKey})`, 'i');
+                    displayEn = s.en.replace(regex, `<span onclick="event.stopPropagation(); this.classList.toggle('blur-none')" class="px-2 py-0.5 rounded-md theme-accent font-bold blur-xs hover:blur-none transition cursor-pointer" title="클릭하면 정답 확인">$1</span>`);
+                } else if (s.key) {
+                    const escapedKey = s.key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(${escapedKey})`, 'i');
+                    displayEn = s.en.replace(regex, `<strong class="theme-text-primary font-semibold underline decoration-dotted underline-offset-4">$1</strong>`);
+                }
+
+                return `
+                    <div onclick="speakText('${s.en.replace(/'/g, "\\'")}', 1.0)" class="p-3.5 rounded-2xl theme-bg-soft hover:opacity-90 transition cursor-pointer flex items-start justify-between gap-3 group">
+                        <div class="space-y-1">
+                            <p class="text-sm sm:text-base font-medium theme-text-main leading-relaxed">
+                                <span class="text-xs font-bold theme-text-primary mr-1.5">${idx + 1}.</span>${displayEn}
+                            </p>
+                            <p class="text-xs theme-text-muted ${state.showKorean ? '' : 'hidden'}">${s.ko || ''}</p>
+                        </div>
+                        <span class="p-1.5 rounded-lg bg-white/70 theme-text-primary opacity-70 group-hover:opacity-100 transition shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleKoreanTranslation() {
+            state.showKorean = !state.showKorean;
+            document.getElementById('toggle-ko-btn').textContent = state.showKorean ? '한글 해석 숨기기' : '한글 해석 보기';
+            renderSpeakingCard();
+        }
+
+        function speakQuestion() {
+            const list = getFilteredSpeakingList();
+            if (!list.length) return;
+            speakText(list[state.speakingIndex].question, 1.0);
+        }
+
+        function speakFullAnswer(rate = 1.0) {
+            const list = getFilteredSpeakingList();
+            if (!list.length) return;
+            const fullText = list[state.speakingIndex].sentences.map(s => s.en).join(' ');
+            speakText(fullText, rate);
+        }
+
+        function nextSpeaking() {
+            const list = getFilteredSpeakingList();
+            if (!list.length) return;
+            stopSpeech();
+            state.speakingIndex = (state.speakingIndex + 1) % list.length;
+            renderSpeakingCard();
+        }
+
+        function prevSpeaking() {
+            const list = getFilteredSpeakingList();
+            if (!list.length) return;
+            stopSpeech();
+            state.speakingIndex = (state.speakingIndex - 1 + list.length) % list.length;
+            renderSpeakingCard();
+        }
+
+        // ==================== 8. 실전 미니 테스트 & Stage 해금 시스템 ====================
+        function renderTestRoadmap() {
+            const maxSt = getMaxStage();
+            document.getElementById('test-unlocked-level').textContent = state.unlockedStage;
+
+            const grid = document.getElementById('stage-roadmap-grid');
+            let html = '';
+            for (let i = 1; i <= maxSt; i++) {
+                const isPassed = i < state.unlockedStage;
+                const isCurrent = i === state.unlockedStage;
+                const isLocked = i > state.unlockedStage;
+
+                html += `
+                    <div class="p-3 rounded-2xl border text-center transition ${
+                        isCurrent ? 'theme-accent border-current font-bold shadow-2xs' :
+                        isPassed ? 'theme-bg-soft theme-border theme-text-primary' :
+                        'bg-gray-50 border-gray-200 text-gray-400'
+                    }">
+                        <div class="text-xs font-bold">Stage ${i}</div>
+                        <div class="text-[11px] mt-1">
+                            ${isPassed ? '✅ 통과 완료' : isCurrent ? '🔥 도전 가능' : '🔒 잠김'}
+                        </div>
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+
+            const targetTitle = document.getElementById('test-target-title');
+            if (state.unlockedStage >= maxSt) {
+                targetTitle.textContent = `🏆 모든 Stage(${maxSt}단계) 해금 완료! 복습 테스트 도전`;
+            } else {
+                targetTitle.textContent = `🎯 Stage ${state.unlockedStage} 통과 & Stage ${state.unlockedStage + 1} 해금 테스트`;
+            }
+
+            document.getElementById('test-intro-box').classList.remove('hidden');
+            document.getElementById('test-active-box').classList.add('hidden');
+            document.getElementById('test-result-box').classList.add('hidden');
+        }
+
+        function startMiniTest() {
+            const allVocab = getAllVocab();
+            const allSpeaking = getAllSpeaking();
+
+            // 현재 해금된 Stage 범위 내 단어 우선 추출
+            let poolVocab = allVocab.filter(v => (v.stage || 1) <= state.unlockedStage);
+            if (poolVocab.length < 4) poolVocab = allVocab;
+
+            let poolSpk = allSpeaking.filter(s => (s.stage || 1) <= state.unlockedStage);
+            if (poolSpk.length < 2) poolSpk = allSpeaking;
+
+            // 셔플 유틸
+            const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+
+            // 1~3번: 객관식 단어 퀴즈 생성
+            const chosenVocabs = shuffle(poolVocab).slice(0, 3);
+            const mcqQuestions = chosenVocabs.map(target => {
+                const distractors = shuffle(allVocab.filter(v => v.word !== target.word)).slice(0, 3).map(d => d.word);
+                const options = shuffle([target.word, ...distractors]);
+                const maskedEx = target.exEn.replace(new RegExp(target.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), '_______');
+                return {
+                    kind: 'mcq',
+                    meaning: target.meaning,
+                    hint: maskedEx,
+                    answer: target.word,
+                    options
+                };
+            });
+
+            // 4~5번: 실전 스피킹 발화 테스트 생성
+            const chosenSpks = shuffle(poolSpk).slice(0, 2);
+            const spkQuestions = chosenSpks.map(s => ({
+                kind: 'speaking',
+                question: s.question,
+                keywords: s.keywords || s.sentences.map(x => x.key).filter(Boolean).join(', '),
+                sample: s.sentences.map(x => x.en).join(' ')
+            }));
+
+            state.quizQuestions = [...mcqQuestions, ...spkQuestions];
+            state.quizCurrentIdx = 0;
+            state.quizScore = 0;
+
+            document.getElementById('test-intro-box').classList.add('hidden');
+            document.getElementById('test-result-box').classList.add('hidden');
+            document.getElementById('test-active-box').classList.remove('hidden');
+
+            renderCurrentQuizQuestion();
+        }
+
+        function renderCurrentQuizQuestion() {
+            const q = state.quizQuestions[state.quizCurrentIdx];
+            const total = state.quizQuestions.length;
+
+            document.getElementById('quiz-progress-badge').textContent = `문제 ${state.quizCurrentIdx + 1} / ${total}`;
+
+            if (q.kind === 'mcq') {
+                document.getElementById('quiz-type-label').textContent = '객관식 어휘·숙어 테스트';
+                document.getElementById('quiz-mcq-area').classList.remove('hidden');
+                document.getElementById('quiz-speaking-area').classList.add('hidden');
+
+                document.getElementById('quiz-mcq-prompt').textContent = q.meaning;
+                document.getElementById('quiz-mcq-hint').textContent = `"${q.hint}"`;
+
+                const optContainer = document.getElementById('quiz-mcq-options');
+                optContainer.innerHTML = q.options.map(opt => `
+                    <button onclick="handleMcqAnswer('${opt.replace(/'/g, "\\'")}')" class="p-3.5 rounded-2xl border theme-border text-left text-sm font-semibold hover:theme-accent transition">
+                        ${opt}
+                    </button>
+                `).join('');
+            } else {
+                document.getElementById('quiz-type-label').textContent = '실전 스피킹 발화 테스트';
+                document.getElementById('quiz-mcq-area').classList.add('hidden');
+                document.getElementById('quiz-speaking-area').classList.remove('hidden');
+
+                document.getElementById('quiz-spk-question').textContent = `Q. ${q.question}`;
+                document.getElementById('quiz-spk-keywords').innerHTML = `💡 포함할 핵심 표현: <strong class="theme-text-primary">${q.keywords}</strong>`;
+                document.getElementById('quiz-sample-answer').textContent = `"${q.sample}"`;
+                document.getElementById('quiz-sample-answer').classList.add('hidden');
+                document.getElementById('test-recorded-audio').classList.add('hidden');
+
+                // 질문 자동 읽어주기
+                speakText(q.question, 1.0);
+            }
+        }
+
+        function handleMcqAnswer(selected) {
+            const q = state.quizQuestions[state.quizCurrentIdx];
+            if (selected === q.answer) {
+                state.quizScore += 1;
+                showToast('⭕ 정답입니다!');
+            } else {
+                showToast(`❌ 오답입니다. 정답: ${q.answer}`);
+            }
+            advanceQuiz();
+        }
+
+        function submitSpeakingQuiz(passed) {
+            stopSpeech();
+            if (passed) {
+                state.quizScore += 1;
+                showToast('👍 훌륭한 스피킹 답변입니다!');
+            } else {
+                showToast('다음 문제로 넘어갑니다.');
+            }
+            advanceQuiz();
+        }
+
+        function speakQuizQuestion() {
+            const q = state.quizQuestions[state.quizCurrentIdx];
+            if (q && q.question) speakText(q.question, 1.0);
+        }
+
+        function advanceQuiz() {
+            state.quizCurrentIdx += 1;
+            if (state.quizCurrentIdx < state.quizQuestions.length) {
+                renderCurrentQuizQuestion();
+            } else {
+                finishMiniTest();
+            }
+        }
+
+        function finishMiniTest() {
+            document.getElementById('test-active-box').classList.add('hidden');
+            const resultBox = document.getElementById('test-result-box');
+            resultBox.classList.remove('hidden');
+
+            const passed = state.quizScore >= 4;
+            const maxSt = getMaxStage();
+
+            if (passed) {
+                document.getElementById('test-result-emoji').textContent = '🎉';
+                if (state.unlockedStage < maxSt) {
+                    const prevStage = state.unlockedStage;
+                    state.unlockedStage += 1;
+                    saveStateToStorage();
+                    updateHeaderStageUI();
+                    document.getElementById('test-result-title').textContent = `축하합니다! Stage ${prevStage} 통과!`;
+                    document.getElementById('test-result-desc').innerHTML = `총 5문제 중 <strong>${state.quizScore}문제</strong>를 통과하여 <strong>Stage ${state.unlockedStage}</strong>의 새로운 단어와 실전 스크립트가 해금되었습니다!`;
+                } else {
+                    document.getElementById('test-result-title').textContent = `완벽합니다! (${state.quizScore}/5 통과)`;
+                    document.getElementById('test-result-desc').innerHTML = `현재 내장된 모든 Stage를 마스터하셨습니다! 우측 상단 <strong>+ 버튼</strong>을 눌러 새 데이터 팩을 추가할 수도 있습니다.`;
+                }
+            } else {
+                document.getElementById('test-result-emoji').textContent = '💪';
+                document.getElementById('test-result-title').textContent = `아쉽네요! (${state.quizScore}/5 정답)`;
+                document.getElementById('test-result-desc').innerHTML = `4문제 이상 통과 시 다음 Stage가 해금됩니다. 단어장과 회화 스튜디오에서 조금 더 연습한 뒤 다시 도전해 보세요!`;
+            }
+        }
+
+        // ==================== 9. 사용자 직접 추가 & 데이터 팩 확장 모달 ====================
+        function openDataModal() {
+            populateCustomTopicSelects();
+            document.getElementById('data-modal').classList.remove('hidden');
+        }
+
+        function closeDataModal() {
+            document.getElementById('data-modal').classList.add('hidden');
+        }
+
+        function switchDataModalTab(tab) {
+            const tabs = ['add-vocab', 'add-speaking', 'pack'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`dm-tab-${t}`);
+                btn.className = t === tab
+                    ? 'flex-1 py-1.5 rounded-lg text-xs font-bold theme-primary'
+                    : 'flex-1 py-1.5 rounded-lg text-xs font-medium theme-text-muted';
+            });
+
+            document.getElementById('form-add-vocab').classList.toggle('hidden', tab !== 'add-vocab');
+            document.getElementById('form-add-speaking').classList.toggle('hidden', tab !== 'add-speaking');
+            document.getElementById('panel-data-pack').classList.toggle('hidden', tab !== 'pack');
+        }
+
+        function populateCustomTopicSelects() {
+            const allOptions = [
+                ...CORE_TOPICS,
+                ...SURVEY_TOPICS.map(s => ({ id: s.id, title: s.title.split(' (')[0] }))
+            ];
+            const html = allOptions.map(o => `<option value="${o.id}">${o.title}</option>`).join('');
+            document.getElementById('custom-vocab-topic').innerHTML = html;
+            document.getElementById('custom-spk-topic').innerHTML = html;
+        }
+
+        function handleAddCustomVocab(e) {
+            e.preventDefault();
+            const selectEl = document.getElementById('custom-vocab-topic');
+            const topicId = selectEl.value;
+            const topicName = selectEl.options[selectEl.selectedIndex].text;
+            const word = document.getElementById('custom-vocab-word').value.trim();
+            const meaning = document.getElementById('custom-vocab-meaning').value.trim();
+            const exEn = document.getElementById('custom-vocab-ex-en').value.trim();
+            const exKo = document.getElementById('custom-vocab-ex-ko').value.trim();
+
+            state.customVocab.push({
+                stage: 1, // 즉시 학습 가능하도록 Stage 1 배정
+                topicId,
+                topicName,
+                word,
+                meaning,
+                exEn,
+                exKo
+            });
+
+            saveStateToStorage();
+            e.target.reset();
+            closeDataModal();
+            showToast(`✅ '${word}' 표현이 단어장에 추가되었습니다!`);
+            if (state.activeTab === 'vocab') renderVocabCard();
+        }
+
+        function handleAddCustomSpeaking(e) {
+            e.preventDefault();
+            const selectEl = document.getElementById('custom-spk-topic');
+            const topicId = selectEl.value;
+            const topicName = selectEl.options[selectEl.selectedIndex].text;
+            const question = document.getElementById('custom-spk-q').value.trim();
+            const enLines = document.getElementById('custom-spk-en').value.split('\n').map(l => l.trim()).filter(Boolean);
+            const koLines = document.getElementById('custom-spk-ko').value.split('\n').map(l => l.trim());
+
+            const sentences = enLines.map((en, idx) => ({
+                en,
+                ko: koLines[idx] || '',
+                key: ''
+            }));
+
+            state.customSpeaking.push({
+                stage: 1,
+                topicId,
+                topicName,
+                type: '나만의 스크립트',
+                question,
+                keywords: '직접 추가한 스크립트',
+                sentences
+            });
+
+            saveStateToStorage();
+            e.target.reset();
+            closeDataModal();
+            showToast('✅ 나만의 문장 스크립트가 추가되었습니다!');
+            if (state.activeTab === 'speaking') renderSpeakingCard();
+        }
+
+        function importDataPack() {
+            const raw = document.getElementById('data-pack-textarea').value.trim();
+            if (!raw) {
+                showToast('데이터 팩 코드를 먼저 붙여넣어 주세요.');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                let addedCount = 0;
+                if (Array.isArray(parsed.vocab)) {
+                    state.customVocab.push(...parsed.vocab);
+                    addedCount += parsed.vocab.length;
+                }
+                if (Array.isArray(parsed.speaking)) {
+                    state.customSpeaking.push(...parsed.speaking);
+                    addedCount += parsed.speaking.length;
+                }
+                if (addedCount === 0) {
+                    showToast('유효한 단어 또는 문장 데이터가 포함되어 있지 않습니다.');
+                    return;
+                }
+                saveStateToStorage();
+                updateHeaderStageUI();
+                document.getElementById('data-pack-textarea').value = '';
+                closeDataModal();
+                showToast(`🎉 총 ${addedCount}개의 새로운 학습 데이터가 확장되었습니다!`);
+            } catch (err) {
+                showToast('올바른 JSON 형식의 데이터 팩이 아닙니다.');
+            }
+        }
+
+        function exportCustomDataPack() {
+            const pack = {
+                vocab: state.customVocab,
+                speaking: state.customSpeaking
+            };
+            const jsonStr = JSON.stringify(pack, null, 2);
+            const textarea = document.getElementById('data-pack-textarea');
+            textarea.value = jsonStr;
+            textarea.select();
+            document.execCommand('copy');
+            showToast('📋 내가 추가한 데이터 팩이 클립보드에 복사되었습니다!');
+        }
+
+        // ==================== 10. 원어민 음성 합성 (Web Speech TTS) ====================
+        function speakText(text, rate = 1.0) {
+            if (!('speechSynthesis' in window)) {
+                showToast('이 브라우저에서는 음성 듣기 기능을 지원하지 않습니다.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = rate;
+
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.includes('en-US') && (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Natural'))) 
+                                || voices.find(v => v.lang.includes('en'));
+            if (preferredVoice) utterance.voice = preferredVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeech() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+        // ==================== 11. 내 목소리 녹음 & 재생 (MediaRecorder) ====================
+        async function toggleRecording(target = 'studio') {
+            const isTest = target === 'test';
+            const btn = document.getElementById(isTest ? 'test-record-btn' : 'record-btn');
+            const btnText = document.getElementById(isTest ? 'test-record-btn-text' : 'record-btn-text');
+
+            if (!state.isRecording) {
+                try {
+                    stopSpeech();
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    state.mediaRecorder = new MediaRecorder(stream);
+                    state.audioChunks = [];
+                    state.recordingTarget = target;
+
+                    state.mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) state.audioChunks.push(e.data);
+                    };
+
+                    state.mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        if (state.recordingTarget === 'test') {
+                            const testAudio = document.getElementById('test-recorded-audio');
+                            testAudio.src = audioUrl;
+                            testAudio.classList.remove('hidden');
+                        } else {
+                            const studioAudio = document.getElementById('recorded-audio');
+                            studioAudio.src = audioUrl;
+                            document.getElementById('audio-playback-box').classList.remove('hidden');
+                        }
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    state.mediaRecorder.start();
+                    state.isRecording = true;
+
+                    btn.classList.remove('theme-primary');
+                    btn.classList.add('bg-red-500', 'hover:bg-red-600', 'text-white', 'recording-pulse');
+                    btnText.textContent = '녹음 중지';
+
+                    if (!isTest) {
+                        const statusBadge = document.getElementById('recording-status-badge');
+                        statusBadge.textContent = '🔴 녹음 중...';
+                        statusBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-red-100 text-red-600';
+                    }
+                } catch (err) {
+                    showToast('마이크 권한이 필요합니다. 브라우저 설정에서 마이크를 허용해 주세요.');
+                }
+            } else {
+                state.mediaRecorder.stop();
+                state.isRecording = false;
+
+                btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white', 'recording-pulse');
+                btn.classList.add('theme-primary');
+                btnText.textContent = isTest ? '다시 녹음하기' : '다시 녹음';
+
+                if (!isTest) {
+                    const statusBadge = document.getElementById('recording-status-badge');
+                    statusBadge.textContent = '✅ 녹음 완료';
+                    statusBadge.className = 'text-xs font-medium px-2.5 py-0.5 rounded-full theme-accent';
+                }
+                showToast('녹음이 완료되었습니다. 재생 버튼으로 들어보세요!');
+            }
+        }
+
+        // ==================== 12. 유틸리티 & 초기화 ====================
+        function showToast(msg) {
+            const box = document.getElementById('toast-box');
+            const text = document.getElementById('toast-message');
+            text.textContent = msg;
+            box.classList.remove('hidden');
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                box.classList.add('hidden');
+            }, 2600);
+        }
+
+        window.onload = function() {
+            loadStateFromStorage();
+            setTheme(state.theme);
+            selectGoal(state.goal);
+            updateHeaderStageUI();
+            renderSurveyGrid();
+            switchTab('survey');
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+            }
+        };
+    </script>
+</body>
+</html>
+```
